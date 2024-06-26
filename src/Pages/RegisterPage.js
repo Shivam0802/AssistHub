@@ -1,12 +1,83 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoPersonSharp } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
 import { BsFillTelephoneFill } from "react-icons/bs";
 import { FcLock, FcUnlock } from "react-icons/fc";
-import { FaLocationDot,FaTransgender } from "react-icons/fa6";
+import { FaLocationDot, FaTransgender } from "react-icons/fa6";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
+import { db } from "../firebase";
+import { serverTimestamp, doc, setDoc } from "firebase/firestore";
+
 
 const Register = () => {
+
+    const [showPassword, setShowPassword] = useState(true);
+    const [errors, setErrors] = useState({});
+    const [showConfirmPassword, setShowConfirmPassword] = useState(true);
+    const [data, setData] = useState({
+        name: '',
+        email: '',
+        contact: '',
+        address: '',
+        gender: '',
+        password: '',
+        confirmPassword: ''
+    });
+
+    const handleConfirmPassword = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
+
+    const handlePassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleChange = (e) => {
+        const id = e.target.id;
+        const value = e.target.value;
+
+        setData({ ...data, [id]: value });
+    };
+
+    const validate = () => {
+        let tempErrors = {};
+        tempErrors.name = data.name ? "" : "Name is required.";
+        tempErrors.email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email) ? "" : "Email is not valid.";
+        tempErrors.contact = /^[0-9]{10}$/.test(data.contact) ? "" : "Contact number must be 10 digits.";
+        tempErrors.address = data.address ? "" : "Address is required.";
+        tempErrors.gender = data.gender ? "" : "Gender is required.";
+        tempErrors.password = data.password.length >= 6 ? "" : "Password must be at least 6 characters.";
+        tempErrors.confirmPassword = data.confirmPassword === data.password ? "" : "Passwords do not match.";
+
+        setErrors(tempErrors);
+        return Object.values(tempErrors).every(x => x === "");
+    };
+
+
+    const handleAdd = async (e) => {
+        e.preventDefault();
+
+        if (!validate()) return;
+        
+            try {
+                const res = await createUserWithEmailAndPassword(auth, data.email, data.password)
+                await setDoc(doc(db, 'users', res.user.uid), {
+                    name: data.name,
+                    email: data.email,
+                    contact: data.contact,
+                    address: data.address,
+                    gender: data.gender,
+                    timestamp: serverTimestamp()
+                });
+                console.log('User Registered Successfully');
+            } catch (error) {
+                console.log(error);
+            }
+    };
+
+
     return (
         <>
             <div className="flex flex-wrap items-center justify-between h-[6rem] bg-[#1B1B1B] px-4 md:px-8">
@@ -20,7 +91,7 @@ const Register = () => {
                         Sign up to create an account
                     </p>
                     <hr className="mb-2" />
-                    <form>
+                    <form onSubmit={handleAdd}>
                         <div className="mb-4">
                             <label htmlFor="name" className="block font-medium text-gray-800 font-comfortaa text-2xl">
                                 Name
@@ -29,6 +100,8 @@ const Register = () => {
                                 <input
                                     type="text"
                                     id="name"
+                                    value={data.name}
+                                    onChange={handleChange}
                                     name="name"
                                     placeholder="Name"
                                     required
@@ -46,6 +119,8 @@ const Register = () => {
                                     type="email"
                                     id="email"
                                     name="email"
+                                    value={data.email}
+                                    onChange={handleChange}
                                     placeholder="Email"
                                     required
                                     style={{ width: '90%', border: 'none', outline: 'none', color: '#151515' }}
@@ -63,6 +138,8 @@ const Register = () => {
                                         type="tel"
                                         id="contact"
                                         name="contact"
+                                        value={data.contact}
+                                        onChange={handleChange}
                                         placeholder="Contact"
                                         required
                                         style={{ width: '100%', border: 'none', outline: 'none', color: '#151515' }}
@@ -78,9 +155,12 @@ const Register = () => {
                                     <select
                                         id="gender"
                                         name="gender"
+                                        value={data.gender}
+                                        onChange={handleChange}
                                         required
                                         style={{ width: '100%', border: 'none', outline: 'none', color: '#151515' }}
                                     >
+                                        <option value="">Select</option>
                                         <option value="male">Male</option>
                                         <option value="female">Female</option>
                                         <option value="other">Other</option>
@@ -98,25 +178,13 @@ const Register = () => {
                                     type="text"
                                     id="address"
                                     name="address"
+                                    value={data.address}
+                                    onChange={handleChange}
                                     placeholder="Address"
                                     required
                                     style={{ width: '90%', border: 'none', outline: 'none', color: '#151515' }}
                                 />
                                 <FaLocationDot style={{ color: 'midnightblue', fontSize: '26px' }} />
-                            </div>
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="date" className="block text-m font-medium text-gray-800 font-comfortaa  text-2xl">
-                                Date of Birth
-                            </label>
-                            <div className="flex items-center space-x-3 border rounded-md p-2 w-full bg-white">
-                                <input
-                                    type="date"
-                                    id="date"
-                                    name="date"
-                                    required
-                                    style={{ width: '100%', border: 'none', outline: 'none', color: '#151515' }}
-                                />
                             </div>
                         </div>
                         <div className="flex flex-col md:flex-row gap-1">
@@ -126,29 +194,39 @@ const Register = () => {
                                 </label>
                                 <div className="flex items-center space-x-3 border rounded-md p-2 w-full bg-white">
                                     <input
-                                        type="password"
+                                        type={showPassword ? 'password' : 'text'}
                                         id="password"
                                         name="password"
+                                        value={data.password}
+                                        onChange={handleChange}
                                         placeholder="Password"
                                         required
                                         style={{ width: '100%', border: 'none', outline: 'none', color: '#151515' }}
                                     />
+                                    <div >
+                                        {showPassword ? <img src="/Assets/eye.svg" alt="eye" style={{ width: '22px' }} onClick={handlePassword} /> : <img src="/Assets/eye_slash.svg" alt="eye" style={{ width: '22px' }} onClick={handlePassword} />}
+                                    </div>
                                     <FcUnlock style={{ color: 'blue', fontSize: '26px' }} />
                                 </div>
                             </div>
                             <div className="mb-4 w-full md:w-1/2">
-                                <label htmlFor="password" className="block text-m font-medium text-gray-800 font-comfortaa text-2xl">
+                                <label htmlFor="confirm-password" className="block text-m font-medium text-gray-800 font-comfortaa text-2xl">
                                     Confirm Password
                                 </label>
                                 <div className="flex items-center space-x-3 border rounded-md p-2 w-full bg-white">
                                     <input
-                                        type="password"
-                                        id="confirm-password"
-                                        name="confirm-password"
+                                        type={showConfirmPassword ? 'password' : 'text'}
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        value={data.confirmPassword}
+                                        onChange={handleChange}
                                         required
                                         style={{ width: '100%', border: 'none', outline: 'none', color: '#151515' }}
-                                        placeholder="Confirm password"
+                                        placeholder="password"
                                     />
+                                    <div >
+                                        {showConfirmPassword ? <img src="/Assets/eye.svg" alt="eye" style={{ width: '22px' }} onClick={handleConfirmPassword} /> : <img src="/Assets/eye_slash.svg" alt="eye" style={{ width: '22px' }} onClick={handleConfirmPassword} />}
+                                    </div>
                                     <FcLock style={{ color: 'blue', fontSize: '26px' }} />
                                 </div>
                             </div>
