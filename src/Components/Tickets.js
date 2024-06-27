@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import AdminSidebar from "./Sidebar";
-import { ticketTables } from "./Tables";
+import { TicketTables } from "./Tables";
 
 const TicketForm = () => {
     const [theme, setTheme] = useState("light");
@@ -26,7 +26,7 @@ const TicketForm = () => {
                 <AdminSidebar theme={theme} toggleTheme={toggleTheme} />
                 <div className="lg:w-[80%] m-4 lg:m-10 p-4 text-black rounded-lg shadow-2xl">
                     <div className="overflow-x-auto">
-                        {ticketTables({ theme })}
+                        {TicketTables({ theme })}
                     </div>
                 </div>
             </div>

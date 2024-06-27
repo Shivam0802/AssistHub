@@ -7,7 +7,6 @@ import TicketForm from "./Components/TicketForm";
 import AdminDashboard from "./Pages/AdminDashboard";
 import Users from "./Components/User";
 import Tickets from "./Components/Tickets";
-import Services from "./Components/Services";
 import Graph from "./Components/Graph";
 import { AuthContext } from "./Context/AuthContext";
 
@@ -18,8 +17,6 @@ const Routing = () => {
   const RequireAuth = ({ children }) => {
     return currentUser ? children : <Navigate to="/" />;
   };
-
-  console.log(currentUser);
 
   return (
     <div className="w-full text-gray-200">
@@ -49,11 +46,6 @@ const Routing = () => {
         <Route path="/tickets" element={
           <RequireAuth>
             <Tickets />
-          </RequireAuth>
-        } />
-        <Route path="/services" element={
-          <RequireAuth>
-            <Services />
           </RequireAuth>
         } />
         <Route path="/graph" element={

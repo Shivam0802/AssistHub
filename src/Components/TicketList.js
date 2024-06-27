@@ -50,7 +50,7 @@ const TicketList = ({ theme }) => {
             style={{ background: theme === 'light' ? '#F5F7F8' : '#373A3B' }}
           >
             <div className="py-1" role="none">
-              <button
+              {/* <button
                 className='block px-4 py-2 text-2xl w-full text-left font-comfortaa font-normal hover:bg-[#2D3250] hover:text-[#F5EEE6]'
                 onMouseEnter={() => handleMouseEnter('update')}
                 onMouseLeave={handleMouseLeave}
@@ -58,7 +58,7 @@ const TicketList = ({ theme }) => {
                 role="menuitem"
               >
                 Update
-              </button>
+              </button> */}
               <button
                 className='block px-4 py-2 text-2xl w-full text-left font-comfortaa font-normal hover:bg-[#2D3250] hover:text-[#F5EEE6]'
                 onMouseEnter={() => handleMouseEnter('checkStatus')}
@@ -68,7 +68,7 @@ const TicketList = ({ theme }) => {
               >
                 Check Status
               </button>
-              <button
+              {/* <button
                 className='block px-4 py-2 text-2xl w-full text-left font-comfortaa font-normal hover:bg-[#2D3250] hover:text-[#F5EEE6]'
                 onMouseEnter={() => handleMouseEnter('edit')}
                 onMouseLeave={handleMouseLeave}
@@ -85,7 +85,7 @@ const TicketList = ({ theme }) => {
                 role="menuitem"
               >
                 Delete
-              </button>
+              </button> */}
             </div>
           </div>
         )}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { auth, db, storage } from '../firebase';
 import { addDoc, collection } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { serverTimestamp } from "firebase/firestore";
 
 const TicketForm = ({ onClose }) => {
   const [file, setFile] = useState(null);
@@ -78,7 +79,8 @@ const TicketForm = ({ onClose }) => {
         priority: data.priority,
         subject: data.subject,
         attachment: data.attachment,
-        issue: data.issue
+        issue: data.issue,
+        timestamp: serverTimestamp()
       });
       onClose();
     } catch (error) {

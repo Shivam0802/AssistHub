@@ -1,6 +1,7 @@
 import React,{useEffect,useState} from "react";
 import Navbar from "./Navbar";
 import AdminSidebar from "./Sidebar";
+import PlotGraph from "./PlotGraph";
 
 const Graph = () => {
     const [theme, setTheme] = useState("light");
@@ -23,6 +24,11 @@ const Graph = () => {
             <Navbar />
             <div className={`flex flex-col lg:flex-row p-2 text-gray-900 ${theme === "light" ? "bg-[#F2F1EB]" : "bg-[#040D12]"}`}>
                 <AdminSidebar theme={theme} toggleTheme={toggleTheme} />
+                {/* <div className="lg:w-[80%] m-4 lg:m-10 p-4 text-black rounded-lg shadow-2xl">
+                    <div className="overflow-x-auto">
+                        {PlotGraph({ theme })}
+                    </div>
+                </div> */}
             </div>
         </>
     );

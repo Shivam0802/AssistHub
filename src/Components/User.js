@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AdminSidebar from "./Sidebar";
 import Navbar from "./Navbar";
-import { userTables } from "./Tables";
+import { UserTables } from "./Tables";
 
 const Users = () => {
     const [theme, setTheme] = useState("light");
@@ -26,7 +26,7 @@ const Users = () => {
                 <AdminSidebar theme={theme} toggleTheme={toggleTheme} />
                 <div className="lg:w-[80%] m-4 lg:m-10 p-4 text-black rounded-lg shadow-2xl">
                     <div className="overflow-x-auto">
-                        {userTables({ theme })}
+                        {UserTables({ theme })}
                     </div>
                 </div>
             </div>
