@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 
-
 export const UserTables = ({ theme }) => {
     const [users, setUsers] = useState([]);
     const isDarkTheme = theme === "dark";
@@ -13,7 +12,10 @@ export const UserTables = ({ theme }) => {
             try {
                 const querySnapshot = await getDocs(collection(db, 'users'));
                 querySnapshot.forEach((doc) => {
-                    list.push({ id: doc.id, ...doc.data() });
+                    const data = doc.data();
+                    if (data.role === 'user') {
+                        list.push({ id: doc.id, ...data });
+                    }
                 });
                 setUsers(list);
             } catch (error) {
@@ -51,8 +53,11 @@ export const UserTables = ({ theme }) => {
                     {users.map((user) => (
                         <div key={user.id} className="grid grid-cols-12 gap-4 p-4 items-center border-b" style={{ borderColor: isDarkTheme ? '#4B5563' : '#E5E7EB' }}>
                             <div className="col-span-12 md:col-span-3 flex items-center">
-                                {user.gender === 'male' ? (<img src='/Assets/man.png' alt="Avatar" className="w-10 h-10 rounded-full mr-4" />) : (<img src='/Assets/girl.png' alt="Avatar" className="w-10 h-10 rounded-full mr-4" />)}
-                                
+                                {user.gender === 'male' ? (
+                                    <img src='/Assets/man.png' alt="Avatar" className="w-10 h-10 rounded-full mr-4" />
+                                ) : (
+                                    <img src='/Assets/girl.png' alt="Avatar" className="w-10 h-10 rounded-full mr-4" />
+                                )}
                                 <div>
                                     <div className="font-medium">{user.name}</div>
                                     <div className="text-gray-500 text-sm">{user.email}</div>
@@ -78,6 +83,7 @@ export const UserTables = ({ theme }) => {
         </div>
     );
 };
+
 
 
 export const TicketTables = ({ theme }) => {

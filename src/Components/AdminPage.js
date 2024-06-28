@@ -14,7 +14,8 @@ const AdminPage = ({ theme }) => {
         const fetchCounts = async () => {
             try {
                 const userSnapshot = await getDocs(collection(db, 'users'));
-                setUserCount(userSnapshot.size);
+                const filteredUsers = userSnapshot.docs.filter(doc => doc.data().role === 'user');
+                setUserCount(filteredUsers.length);
 
                 const ticketSnapshot = await getDocs(collection(db, 'tickets'));
                 setTicketCount(ticketSnapshot.size);
