@@ -78,6 +78,7 @@ const TicketForm = ({ onClose }) => {
         category: data.category,
         priority: data.priority,
         subject: data.subject,
+        status: 'Pending',
         attachment: data.attachment,
         issue: data.issue,
         timestamp: serverTimestamp()

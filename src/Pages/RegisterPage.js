@@ -5,7 +5,7 @@ import { MdEmail } from "react-icons/md";
 import { BsFillTelephoneFill } from "react-icons/bs";
 import { FcLock, FcUnlock } from "react-icons/fc";
 import { FaLocationDot, FaTransgender } from "react-icons/fa6";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { auth, db } from "../firebase"; // Ensure the correct path
 import { serverTimestamp, doc, setDoc } from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
@@ -77,8 +77,12 @@ const Register = () => {
                 role: 'user',
                 timestamp: serverTimestamp()
             });
-            console.log('User Registered Successfully');
-            toast.success('User Registered Successfully!', {
+
+            // Send email verification
+            await sendEmailVerification(res.user);
+            console.log('Verification email sent.');
+
+            toast.success('User Registered Successfully! Verification email sent.', {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -87,6 +91,7 @@ const Register = () => {
                 draggable: true,
                 progress: undefined,
             });
+
             navigate('/');
         } catch (error) {
             console.error('Error registering user: ', error);

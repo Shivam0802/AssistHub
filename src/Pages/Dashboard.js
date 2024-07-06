@@ -5,12 +5,13 @@ import Navbar from '../Components/Navbar';
 import Modal from '../Components/Modal';
 import TicketForm from '../Components/TicketForm';
 import { db } from '../firebase';
-import { getDoc, doc } from 'firebase/firestore';
+import { collection, getDocs,doc, getDoc } from 'firebase/firestore';
 
 const Dashboard = () => {
   const [theme, setTheme] = useState('light');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [user, setUser] = useState({});
+  const [tickets, setTickets] = useState([]);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme');
@@ -38,9 +39,9 @@ const Dashboard = () => {
         const storedUser = localStorage.getItem('user');
         const userId = JSON.parse(storedUser).uid;
         if (userId) {
-          const docSnap = await getDoc(doc(db, "users", userId));
+          const userDocRef = doc(db, "users", userId);
+          const docSnap = await getDoc(userDocRef);
           if (docSnap.exists()) {
-            console.log("Document data:", docSnap.data());
             setUser(docSnap.data());
           } else {
             console.log("No such document!");
@@ -53,6 +54,20 @@ const Dashboard = () => {
       }
     };
     fetchUser();
+  }, []);
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const ticketsCollectionRef = collection(db, 'tickets');
+        const querySnapshot = await getDocs(ticketsCollectionRef);
+        const ticketsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setTickets(ticketsData);
+      } catch (error) {
+        console.error('Error fetching tickets:', error);
+      }
+    };
+    fetchTickets();
   }, []);
 
   return (
@@ -117,11 +132,11 @@ const Dashboard = () => {
         </div>
         <div className={`lg:w-[70%] m-4 lg:m-10 p-4 rounded-lg shadow-2xl ${theme === 'light' ? 'bg-gray-200 text-black' : 'bg-gray-900 text-white'}`}>
           <h2 className="text-3xl font-semibold mb-8 pl-2">Your Tickets</h2>
-          {
-            [1, 2, 3].map((item, index) => (
-              <TicketList key={index} theme={theme} />
-            ))
-          }
+          <div className="flex flex-row justify-between">
+          {tickets.map((ticket, index) => (
+            <TicketList key={index} theme={theme} ticket={ticket} />
+          ))}
+          </div>
           <div className='flex justify-end pr-4 mt-10'>
             <button className={`text-2xl text-gray-700 rounded-md hover:text-[#B25068] font-comfortaa font-medium hover:underline ${theme === 'light' ? 'bg-gray-200 text-black' : 'bg-gray-900 text-white'}`}>
               View All Tickets
